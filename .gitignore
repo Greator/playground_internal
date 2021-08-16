@@ -1,0 +1,27 @@
+# WordPress
+web/wp
+web/.htaccess
+web/wp/wp-content/themes
+
+# Local Development
+.DS_Store
+database.sql.gz
+files.tar.gz
+/local
+.idea
+Brewfile.lock.json
+web/app/cache
+
+# Logs
+*.log
+
+# Dotenv
+.env
+.env.*
+!.env.example
+
+# Composer
+/vendor
+
+# WP-CLI
+wp-cli.local.yml
