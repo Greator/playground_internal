@@ -22,6 +22,10 @@ class Playground {
 
     add_settings_field('playground_quiet_hours', 'Quite hours', array($this, 'quietHoursHTML'), 'playground-settings-page', 'section1');
     register_setting('playgroungplugin','playground_quiet_hours',array('sanitize_callback' => 'sanitize_text_field', 'default' => '1'));
+  
+    add_settings_field('playground_footer_colors', 'Footer colors', array($this, 'footerColorsHTML'), 'playground-settings-page', 'section1');
+    register_setting('playgroungplugin','playground_footer_bg_color',array('sanitize_callback' => 'sanitize_text_field', 'default' => '#007CFF'));
+    register_setting('playgroungplugin','playground_footer_text_color',array('sanitize_callback' => 'sanitize_text_field', 'default' => '#FFFFFF'));
   }
 
   function adminPage(){
@@ -36,6 +40,13 @@ class Playground {
   function quietHoursHTML(){ ?>
     <input type="checkbox" name="playground_quiet_hours" value="1" <?php checked(get_option('playground_quiet_hours', '1')); ?> id="playground_quiet_hours">
     <label for="playground_quiet_hours">Show 0 notifications from 8pm to 7am</label>
+  <?php }
+
+  function footerColorsHTML(){ ?>
+    <label for="playground_footer_bg_color">Background color:</label>
+    <input type="text" name="playground_footer_bg_color" value="<?php echo esc_attr(get_option('playground_footer_bg_color', '#007CFF')); ?>" id="playground_footer_bg_color">
+    <label for="playground_footer_text_color">Text color:</label>
+    <input type="text" name="playground_footer_text_color" value="<?php echo esc_attr(get_option('playground_footer_text_color', '#FFFFFF')); ?>" id="playground_footer_text_color">
   <?php }
 
   function optionsHMTL(){ ?>
