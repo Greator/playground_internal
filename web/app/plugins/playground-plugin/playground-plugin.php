@@ -64,3 +64,13 @@ class Playground {
 }
 
 $playground = new Playground();
+
+// remove deprecation warning in PHP 8
+// Deprecated: Required parameter $parameter2 follows optional parameter $parameter1
+if ( defined('PHP_VERSION_ID') && PHP_MAJOR_VERSION > 7 ) {
+  set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    if (false === str_contains($errstr, 'follows optional parameter')) {
+        return false;
+    }
+  });
+}
