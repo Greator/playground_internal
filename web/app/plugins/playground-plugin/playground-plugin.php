@@ -12,6 +12,9 @@ class Playground {
   function __construct(){
     add_action('admin_menu', array($this, 'adminPage'));
     add_action('admin_init', array($this, 'settings'));
+
+    add_filter('bp_has_notifications', array($this, 'quietHoursFilter'));
+    add_filter('bp_notifications_get_total_notification_count', array($this, 'quietHoursFilter'));
   }
 
   function settings(){
@@ -61,9 +64,22 @@ class Playground {
       </form>
     </div>
   <?php }
+
+  function quietHoursFilter( $notifications ) {
+    if (get_option('playground_quiet_hours', '1') === '1') {
+      date_default_timezone_set('Europe/Berlin');
+      $current_hour = date("H");
+      if( $current_hour>19 || $current_hour<7 ){
+        return is_bool($notifications) ? false : 0;
+      }
+    }
+    return $notifications;
+  }
 }
 
 $playground = new Playground();
+
+//bp_notifications_get_total_notification_count
 
 // remove deprecation warning in PHP 8
 // Deprecated: Required parameter $parameter2 follows optional parameter $parameter1
