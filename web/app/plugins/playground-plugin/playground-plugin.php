@@ -15,13 +15,16 @@ class Playground {
 
     add_filter('bp_has_notifications', array($this, 'quietHoursFilter'));
     add_filter('bp_notifications_get_total_notification_count', array($this, 'quietHoursFilter'));
+
+    add_action( "updated_option", array($this, 'playground_regenerate_css' ));
+    add_action('wp_enqueue_scripts', array($this, 'playgroung_load_css'));
   }
 
   function settings(){
     add_settings_section('section1', null, null, 'playground-settings-page');
 
-    add_settings_field('playground_sidebar_show_searchbox', 'Sidebar', array($this, 'showSidebarSearchHTML'), 'playground-settings-page', 'section1');
-    register_setting('playgroungplugin','playground_sidebar_show_searchbox',array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
+    add_settings_field('playground_header_show_searchbox', 'Header', array($this, 'showHeaderSearchHTML'), 'playground-settings-page', 'section1');
+    register_setting('playgroungplugin','playground_header_show_searchbox',array('sanitize_callback' => 'sanitize_text_field', 'default' => '0'));
 
     add_settings_field('playground_quiet_hours', 'Quite hours', array($this, 'quietHoursHTML'), 'playground-settings-page', 'section1');
     register_setting('playgroungplugin','playground_quiet_hours',array('sanitize_callback' => 'sanitize_text_field', 'default' => '1'));
@@ -35,9 +38,9 @@ class Playground {
     add_options_page('Plaground settings', 'Playground', 'manage_options','playground-settings-page',array($this,'optionsHMTL'));
   }
 
-  function showSidebarSearchHTML(){ ?>
-    <input type="checkbox" name="playground_sidebar_show_searchbox" value="1" <?php checked(get_option('playground_sidebar_show_searchbox', '0')); ?>  id="playground_sidebar_show_searchbox">
-    <label for="playground_sidebar_show_searchbox">Display searchbox in sidebar</label>
+  function showHeaderSearchHTML(){ ?>
+    <input type="checkbox" name="playground_header_show_searchbox" value="1" <?php checked(get_option('playground_header_show_searchbox', '0')); ?>  id="playground_header_show_searchbox">
+    <label for="playground_header_show_searchbox">Display searchbox in header</label>
   <?php }
 
   function quietHoursHTML(){ ?>
@@ -75,11 +78,26 @@ class Playground {
     }
     return $notifications;
   }
+
+  function playgroung_load_css(){
+    wp_register_style('playgroungplugincss', plugins_url( '/playgroungplugin.css', __FILE__ ));
+    wp_enqueue_style( 'playgroungplugincss');
+  }
+
+  function playground_regenerate_css() {
+    $search_icon_visible = intval(get_option('playground_header_show_searchbox', '0'));
+    $s = $search_icon_visible===0 ? 'none' : 'initial';
+
+    $bg = esc_html(get_option('playground_footer_bg_color', '#007CFF'));
+    $t = esc_html(get_option('playground_footer_text_color', '#FFFFFF'));
+
+    $css = "div a.header-search-link{display:$s;}footer.footer-bottom.bb-footer{background:$bg;color:$t;}";
+    file_put_contents(plugin_dir_path( __FILE__ ).'playgroungplugin.css', $css);
+  }
 }
 
-$playground = new Playground();
 
-//bp_notifications_get_total_notification_count
+$playground = new Playground();
 
 // remove deprecation warning in PHP 8
 // Deprecated: Required parameter $parameter2 follows optional parameter $parameter1
